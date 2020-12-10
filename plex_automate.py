@@ -14,7 +14,7 @@ def app_checker():
 
 
 def disk_checker_initialize():
-    disk_exists = os.path.exists("/dev/disk3")
+    disk_exists = os.path.isdir("/Volumes/External")
     if disk_exists is True:
         print("Disk exists. Ready to start program.")
         os.system("open /Applications/Plex\ Media\ Server.app")
@@ -23,7 +23,4 @@ def disk_checker_initialize():
 
 
 app_checker()
-
-disk_check = os.path.ismount("/dev/disk1s1")
-print(disk_check)
-# disk_checker_initialize()
+disk_checker_initialize()
