@@ -3,6 +3,7 @@
 
 import os
 import time
+import psutil
 
 
 def app_checker():
@@ -13,11 +14,15 @@ def app_checker():
         print("Plex Media Server is missing.")
 
 
+def app_run_checker():
+    print("")
+
+
 def disk_checker_initialize():
     disk_exists = os.path.isdir("/Volumes/LaCie")
-    is_running = False  # Need to figure out how to check if app is running
-    if is_running is True:
-        print("")
+    app_run_checker()  # Need to figure out how to check if app is running
+    if app_run_checker() is True:
+        print("Plex is already running.")
     elif disk_exists is True:
         print("Disk exists. Ready to start program.")
         os.system("open /Applications/Plex\ Media\ Server.app")
