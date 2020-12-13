@@ -20,25 +20,25 @@ def app_run_checker(process_name):
         except (psutil.NoSuchProcess, psutil.AccessDenied,
                 psutil.ZombieProcess):
             pass
-    return False;
+    return False
 
 
-while True:
-    app_exists = os.path.exists(app_path)
-    disk_exists = os.path.isdir(volume_path)
-    if app_exists is True:
-        print("App exists. Ready to continue.")
-        if app_run_checker(app_name) and disk_exists is False:
-            print("Disk not mounted. Closing Plex.")
-            os.system(app_killer)
-        elif app_run_checker(app_name) and disk_exists is True:
-            print("Everything is connected and running.")
-        elif app_run_checker(app_name) is False and disk_exists \
-                is True:
-            print("Disk exists. Ready to start program.")
-            os.system(open_command)
-        elif app_run_checker(app_name) is False and disk_exists is False:
-            print("App is closed and disk not mounted. Nothing to do.")
-    else:
-        print("App is missing.")
+app_exists = os.path.exists(app_path)
+
+while app_exists:
     time.sleep(10)
+    disk_exists = os.path.isdir(volume_path)
+    if app_run_checker(app_name) and disk_exists is False:
+        print("Disk not mounted. Closing Plex.")
+        os.system(app_killer)
+    elif app_run_checker(app_name) and disk_exists is True:
+        print("Everything is connected and running.")
+    elif app_run_checker(app_name) is False and disk_exists \
+            is True:
+        print("Disk exists. Ready to start program.")
+        os.system(open_command)
+    elif app_run_checker(app_name) is False and disk_exists is False:
+        print("App is closed and disk not mounted. Nothing to do.")
+else:
+    print("App is missing.")
+    exit()
