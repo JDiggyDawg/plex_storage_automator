@@ -1,37 +1,44 @@
-# Automatically starts or stops Plex depending on the connectivity of external
-# storage device.
+# Automatically starts or stops application depending on the connectivity of
+# external storage device.
 
 import os
 import time
 import psutil
 
+app_name = "Plex Media Server"
+app_path = "/Applications/Plex Media Server.app"
+volume_path = "/Volumes/External"
+open_command = "open /Applications/Plex\ Media\ Server.app"
+app_killer = "pkill Plex Media Server"
 
-def app_checker():
-    app_exists = os.path.exists("/Applications/Plex Media Server.app")
+
+def app_run_checker(process_name):
+    for process in psutil.process_iter():
+        try:
+            if process_name.lower() in process.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied,
+                psutil.ZombieProcess):
+            pass
+    return False;
+
+
+while True:
+    app_exists = os.path.exists(app_path)
+    disk_exists = os.path.isdir(volume_path)
     if app_exists is True:
-        print("Plex exists. Ready to continue.")
+        print("App exists. Ready to continue.")
+        if app_run_checker(app_name) and disk_exists is False:
+            print("Disk not mounted. Closing Plex.")
+            os.system(app_killer)
+        elif app_run_checker(app_name) and disk_exists is True:
+            print("Everything is connected and running.")
+        elif app_run_checker(app_name) is False and disk_exists \
+                is True:
+            print("Disk exists. Ready to start program.")
+            os.system(open_command)
+        elif app_run_checker(app_name) is False and disk_exists is False:
+            print("App is closed and disk not mounted. Nothing to do.")
     else:
-        print("Plex Media Server is missing.")
-
-
-def app_run_checker():
-    print("")
-
-
-def disk_checker_initialize():
-    disk_exists = os.path.isdir("/Volumes/LaCie")
-    app_run_checker()  # Need to figure out how to check if app is running
-    if app_run_checker() is True:
-        print("Plex is already running.")
-    elif disk_exists is True:
-        print("Disk exists. Ready to start program.")
-        os.system("open /Applications/Plex\ Media\ Server.app")
-    else:
-        print("Disk not mounted. Closing Plex.")
-        os.system("pkill Plex Media Server")
-
-
-# while True:
-    # app_checker()
-    # disk_checker_initialize()
-    # time.sleep(60)
+        print("App is missing.")
+    time.sleep(10)
